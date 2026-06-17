@@ -31,6 +31,10 @@ export interface ShopifyProduct {
   handle: string;
   title: string;
   description: string;
+  price: string;
+  compareAtPrice: string | null;
+  image: string | null;
+  merchandiseId: string | null;
   descriptionHtml: string;
   availableForSale: boolean;
   productType: string;

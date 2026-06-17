@@ -4,14 +4,17 @@ import { TrustSection } from '@/components/trust-section';
 import { LocationSection } from '@/components/location-section';
 import { ProductCard } from '@/components/product-card';
 import { CategoryCard } from '@/components/category-card';
-import { PLACEHOLDER_PRODUCTS, CATEGORIES } from '@/lib/constants';
+import { CATEGORIES } from '@/lib/constants';
+import { getProducts } from '@/lib/shopify';
 import Link from 'next/link';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { WHATSAPP_URL } from '@/lib/constants';
 
-export default function HomePage() {
-  const featuredProducts = PLACEHOLDER_PRODUCTS.filter((_, i) => i < 4);
-  const newArrivals = PLACEHOLDER_PRODUCTS.filter((p) => p.tags.includes('new') || p.tags.includes('bestseller')).slice(0, 4);
+export default async function HomePage() {
+  const { products } = await getProducts({ first: 8, sortKey: 'created-desc' });
+  const featuredProducts = products.slice(0, 4);
+  const taggedProducts = products.filter((p) => p.tags.includes('new') || p.tags.includes('bestseller'));
+  const newArrivals = (taggedProducts.length ? taggedProducts : products.slice(4)).slice(0, 4);
 
   return (
     <>
@@ -47,8 +50,10 @@ export default function HomePage() {
                 price={product.price}
                 compareAtPrice={product.compareAtPrice}
                 image={product.image}
+                merchandiseId={product.merchandiseId}
                 productType={product.productType}
                 tags={[...product.tags]}
+                available={product.availableForSale}
               />
             ))}
           </div>
@@ -117,8 +122,10 @@ export default function HomePage() {
                 price={product.price}
                 compareAtPrice={product.compareAtPrice}
                 image={product.image}
+                merchandiseId={product.merchandiseId}
                 productType={product.productType}
                 tags={[...product.tags]}
+                available={product.availableForSale}
               />
             ))}
           </div>

@@ -422,11 +422,19 @@ export async function removeFromCart(cartId: string, lineIds: string[]) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformProduct(raw: any) {
+  const firstVariant = raw.variants?.edges?.[0]?.node;
+  const price = firstVariant?.price?.amount ?? raw.priceRange?.minVariantPrice?.amount ?? '0';
+  const compareAtPrice = firstVariant?.compareAtPrice?.amount ?? null;
+
   return {
     id: raw.id,
     handle: raw.handle,
     title: raw.title,
     description: raw.description,
+    price,
+    compareAtPrice,
+    image: raw.featuredImage?.url ?? null,
+    merchandiseId: firstVariant?.id ?? null,
     descriptionHtml: raw.descriptionHtml,
     availableForSale: raw.availableForSale,
     productType: raw.productType,

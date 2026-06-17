@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
-import { SITE_URL, CATEGORIES, PLACEHOLDER_PRODUCTS } from '@/lib/constants';
+import { SITE_URL, CATEGORIES } from '@/lib/constants';
+import { getProducts } from '@/lib/shopify';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages = [
     { url: SITE_URL, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 1 },
     { url: `${SITE_URL}/shop`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.9 },
@@ -18,7 +19,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const productPages = PLACEHOLDER_PRODUCTS.map((product) => ({
+  const { products } = await getProducts({ first: 100 });
+  const productPages = products.map((product) => ({
     url: `${SITE_URL}/product/${product.handle}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,

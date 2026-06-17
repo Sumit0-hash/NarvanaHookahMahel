@@ -14,6 +14,7 @@ interface ProductCardProps {
   price: string;
   compareAtPrice?: string | null;
   image: string | null;
+  merchandiseId?: string | null;
   productType?: string;
   tags?: string[];
   available?: boolean;
@@ -25,6 +26,7 @@ export function ProductCard({
   price,
   compareAtPrice,
   image,
+  merchandiseId,
   productType,
   tags = [],
   available = true,
@@ -36,7 +38,7 @@ export function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     addItem({
-      merchandiseId: `local-${handle}`,
+      merchandiseId: merchandiseId || `local-${handle}`,
       quantity: 1,
       title,
       price,

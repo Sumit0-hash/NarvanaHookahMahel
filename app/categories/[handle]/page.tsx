@@ -1,42 +1,28 @@
-'use client';
-
-import { useParams } from 'next/navigation';
 import { ProductCard } from '@/components/product-card';
 import { EmptyState } from '@/components/empty-state';
-import { ProductGridSkeleton } from '@/components/loading-skeleton';
-import { CATEGORIES, PLACEHOLDER_PRODUCTS } from '@/lib/constants';
-import { useEffect, useState } from 'react';
+import { CATEGORIES } from '@/lib/constants';
+import { productMatchesCategory } from '@/lib/product-filters';
+import { getProducts } from '@/lib/shopify';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 
-export default function CategoryPage() {
-  const params = useParams();
-  const handle = params.handle as string;
-  const [isLoading, setIsLoading] = useState(true);
+interface CategoryPageProps {
+  params: {
+    handle: string;
+  };
+}
 
+export default async function CategoryPage({ params }: CategoryPageProps) {
+  const { handle } = params;
   const category = CATEGORIES.find((c) => c.handle === handle);
   const categoryName = category?.title || handle.replace('-', ' ');
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 300);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const products = PLACEHOLDER_PRODUCTS.filter(
-    (p) => p.productType.toLowerCase() === handle.replace('-', ' ')
+  const { products: allProducts } = await getProducts({ first: 100 });
+  const products = allProducts.filter(
+    (p) => productMatchesCategory(p, handle)
   );
-
-  if (isLoading) {
-    return (
-      <div className="container-luxury section-padding">
-        <ProductGridSkeleton count={6} />
-      </div>
-    );
-  }
 
   return (
     <div className="container-luxury section-padding">
-      {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm mb-8">
         <Link href="/" className="text-charcoal-500 hover:text-gold-500 transition-colors">Home</Link>
         <ChevronRight size={12} className="text-charcoal-600" />
@@ -66,8 +52,10 @@ export default function CategoryPage() {
               price={product.price}
               compareAtPrice={product.compareAtPrice}
               image={product.image}
+              merchandiseId={product.merchandiseId}
               productType={product.productType}
               tags={[...product.tags]}
+              available={product.availableForSale}
             />
           ))}
         </div>
