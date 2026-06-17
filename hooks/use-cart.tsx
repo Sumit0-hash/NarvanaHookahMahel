@@ -97,11 +97,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
           return;
         }
-
-
         const res = await fetch('/api/cart/create');
-
-
         const cart = await res.json();
 
         setCartId(cart.id);
