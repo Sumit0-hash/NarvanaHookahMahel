@@ -2,26 +2,37 @@ const STORE_DOMAIN = process.env.SHOPIFY_STORE_DOMAIN || '';
 const STOREFRONT_TOKEN = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || '';
 
 const endpoint = `https://${STORE_DOMAIN}/api/2025-01/graphql.json`;
-
-async function shopifyFetch<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+async function shopifyFetch<T>(
+  query: string,
+  variables?: Record<string, unknown>
+): Promise<T> {
   const res = await fetch(endpoint, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': STOREFRONT_TOKEN,
+      "Content-Type": "application/json",
+      "X-Shopify-Storefront-Access-Token": STOREFRONT_TOKEN,
     },
-    body: JSON.stringify({ query, variables }),
-    next: { revalidate: 60 },
+    body: JSON.stringify({
+      query,
+      variables,
+    }),
+    next: {
+      revalidate: 60,
+    },
   });
-
-  if (!res.ok) {
-    throw new Error(`Shopify API error: ${res.status} ${res.statusText}`);
-  }
 
   const json = await res.json();
 
+  if (!res.ok) {
+    throw new Error(
+      `Shopify API error: ${res.status} ${res.statusText}`
+    );
+  }
+
   if (json.errors) {
-    throw new Error(`Shopify GraphQL errors: ${JSON.stringify(json.errors)}`);
+    throw new Error(
+      `Shopify GraphQL errors: ${JSON.stringify(json.errors)}`
+    );
   }
 
   return json.data;
