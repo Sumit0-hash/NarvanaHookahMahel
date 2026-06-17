@@ -17,7 +17,6 @@ export default function CartPage() {
   const subtotal = parseFloat(totalAmount);
   const shipping = subtotal >= 999 ? 0 : 99;
   const total = subtotal + shipping;
-  console.log("checkoutUrl =", checkoutUrl);
 
   return (
     <div className="container-luxury section-padding">
