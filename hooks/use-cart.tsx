@@ -72,21 +72,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    console.log("useEffect running");
 
     const storedId = getStoredCartId();
     const storedItems = getStoredItems();
 
-    console.log("storedId =", storedId);
 
     setItems(storedItems);
 
     async function initCart() {
       try {
-        console.log("initCart started");
 
         if (storedId) {
-          console.log("Using existing cart:", storedId);
 
           setCartId(storedId);
 
@@ -96,22 +92,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
           const cart = await res.json();
 
-          console.log("RESTORED CART:", cart);
 
           setCheckoutUrl(cart.checkoutUrl);
 
           return;
         }
 
-        console.log("Calling /api/cart/create");
 
         const res = await fetch('/api/cart/create');
 
-        console.log("Response status:", res.status);
 
         const cart = await res.json();
-
-        console.log("CART FROM API:", cart);
 
         setCartId(cart.id);
         setCheckoutUrl(cart.checkoutUrl);
