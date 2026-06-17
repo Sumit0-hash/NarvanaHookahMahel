@@ -11,7 +11,6 @@ interface ProductPageProps {
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const product = await getProduct(params.handle);
 
-  console.log("PRODUCT PAGE DATA:", product);
 
   if (!product) {
     notFound();

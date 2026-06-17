@@ -72,15 +72,62 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    console.log("useEffect running");
+
     const storedId = getStoredCartId();
     const storedItems = getStoredItems();
-    setCartId(storedId);
+
+    console.log("storedId =", storedId);
+
     setItems(storedItems);
+
+    async function initCart() {
+      try {
+        console.log("initCart started");
+
+        if (storedId) {
+          console.log("Using existing cart:", storedId);
+
+          setCartId(storedId);
+
+          const res = await fetch(
+            `/api/cart/get?cartId=${encodeURIComponent(storedId)}`
+          );
+
+          const cart = await res.json();
+
+          console.log("RESTORED CART:", cart);
+
+          setCheckoutUrl(cart.checkoutUrl);
+
+          return;
+        }
+
+        console.log("Calling /api/cart/create");
+
+        const res = await fetch('/api/cart/create');
+
+        console.log("Response status:", res.status);
+
+        const cart = await res.json();
+
+        console.log("CART FROM API:", cart);
+
+        setCartId(cart.id);
+        setCheckoutUrl(cart.checkoutUrl);
+
+        storeCartId(cart.id);
+      } catch (err) {
+        console.error("INIT CART ERROR:", err);
+      }
+    }
+
+    initCart();
   }, []);
 
   const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalAmount = items.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0).toFixed(2);
-  const checkoutUrl = cartId ? null : null;
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
 
   const addItem = useCallback(async (newItem: Omit<CartItem, 'lineId'>) => {
     setIsLoading(true);

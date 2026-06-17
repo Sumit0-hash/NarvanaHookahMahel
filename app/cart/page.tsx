@@ -8,7 +8,7 @@ import { formatPrice } from '@/lib/utils';
 import { EmptyState } from '@/components/empty-state';
 
 export default function CartPage() {
-  const { items, totalQuantity, totalAmount, updateItemQuantity, removeItem, clearCart, isLoading } = useCart();
+  const { items, totalQuantity, totalAmount, updateItemQuantity, removeItem, clearCart, isLoading,checkoutUrl } = useCart();
 
   if (items.length === 0) {
     return <EmptyState type="cart" />;
@@ -17,6 +17,7 @@ export default function CartPage() {
   const subtotal = parseFloat(totalAmount);
   const shipping = subtotal >= 999 ? 0 : 99;
   const total = subtotal + shipping;
+  console.log("checkoutUrl =", checkoutUrl);
 
   return (
     <div className="container-luxury section-padding">
@@ -145,6 +146,12 @@ export default function CartPage() {
             </div>
 
             <button
+              onClick={() => {
+                if (checkoutUrl) {
+                  window.location.href = checkoutUrl;
+                }
+              }}
+              disabled={!checkoutUrl}
               className="w-full flex items-center justify-center gap-2 mt-6 px-6 py-3.5 bg-gold-500 text-charcoal-900 text-sm font-semibold rounded-lg hover:bg-gold-400 transition-all hover:shadow-lg hover:shadow-gold-500/20"
             >
               Proceed to Checkout
