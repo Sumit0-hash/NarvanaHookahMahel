@@ -98,7 +98,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
 
         <div className="flex flex-col">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs uppercase tracking-wider text-gold-500/70">{product.productType}</span>
+            <span className="text-lg uppercase tracking-wider text-gold-500/70">{product.productType}</span>
             {product.tags?.includes('bestseller') && (
               <span className="px-2 py-0.5 bg-green-600/20 text-green-400 text-[10px] font-bold rounded-md uppercase">Bestseller</span>
             )}
@@ -130,7 +130,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
           <p className="text-sm text-charcoal-300 leading-relaxed mb-6">{product.description}</p>
 
           <div className="mb-6">
-            <label className="text-sm font-medium text-charcoal-200 mb-2 block">Quantity</label>
+            <label className="text-md font-medium text-white mb-2 block">Quantity</label>
             <div className="flex items-center gap-3">
               <div className="flex items-center border border-charcoal-700 rounded-lg overflow-hidden">
                 <button
@@ -178,12 +178,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
             >
               <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
             </button>
-            <button
-              className="w-12 h-12 flex items-center justify-center border border-charcoal-700 text-charcoal-400 rounded-lg hover:border-gold-500/30 hover:text-gold-500 transition-colors"
-              aria-label="Share"
-            >
-              <Share2 size={18} />
-            </button>
+            
           </div>
 
           <div className="grid grid-cols-3 gap-4 mb-8">
@@ -195,28 +190,28 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
               <Shield size={18} className="text-gold-500 mb-1.5" />
               <span className="text-[11px] text-charcoal-400">Genuine Product</span>
             </div>
-            <div className="flex flex-col items-center p-3 bg-charcoal-800 rounded-lg border border-charcoal-700/30 text-center">
+            {/* <div className="flex flex-col items-center p-3 bg-charcoal-800 rounded-lg border border-charcoal-700/30 text-center">
               <RotateCcw size={18} className="text-gold-500 mb-1.5" />
               <span className="text-[11px] text-charcoal-400">Easy Returns</span>
-            </div>
+            </div> */}
           </div>
 
           <div className="p-5 bg-charcoal-800 border border-charcoal-700/30 rounded-xl">
             <h3 className="text-sm font-semibold text-charcoal-100 mb-3">Product Details</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-charcoal-500">Type</span>
-                <span className="text-charcoal-300">{product.productType}</span>
+                <span className="text-white">Type</span>
+                <span className="text-white">{product.productType}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-charcoal-500">Availability</span>
+                <span className="text-white">Availability</span>
                 <span className={product.availableForSale ? 'text-green-400' : 'text-red-400'}>
                   {product.availableForSale ? 'In Stock' : 'Out of Stock'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-charcoal-500">Vendor</span>
-                <span className="text-charcoal-300">{product.vendor || 'Narwana Hookah Mahal'}</span>
+                <span className="text-white">Vendor</span>
+                <span className="text-white">{product.vendor || 'Narwana Hookah Mahal'}</span>
               </div>
             </div>
           </div>

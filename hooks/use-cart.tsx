@@ -117,28 +117,56 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
 
   const addItem = useCallback(async (newItem: Omit<CartItem, 'lineId'>) => {
+    if (!cartId) {
+      console.error('Cart not initialized');
+      return;
+    }
+
     setIsLoading(true);
+
     try {
+      await fetch('/api/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cartId,
+          merchandiseId: newItem.merchandiseId,
+          quantity: newItem.quantity,
+        }),
+      });
+
       setItems((prev) => {
-        const existing = prev.find((i) => i.merchandiseId === newItem.merchandiseId);
+        const existing = prev.find(
+          (i) => i.merchandiseId === newItem.merchandiseId
+        );
+
         if (existing) {
           const updated = prev.map((i) =>
             i.merchandiseId === newItem.merchandiseId
               ? { ...i, quantity: i.quantity + newItem.quantity }
               : i
           );
+
           storeItems(updated);
           return updated;
         }
-        const updated = [...prev, { ...newItem, lineId: `local-${Date.now()}` }];
+
+        const updated = [
+          ...prev,
+          { ...newItem, lineId: `local-${Date.now()}` },
+        ];
+
         storeItems(updated);
         return updated;
       });
+
       setIsOpen(true);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [cartId]);
 
   const updateItemQuantity = useCallback(async (merchandiseId: string, quantity: number) => {
     setIsLoading(true);

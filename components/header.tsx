@@ -159,14 +159,12 @@ export function Header() {
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
           <div className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-charcoal-900 border-r border-charcoal-700/50 animate-slide-in-right overflow-y-auto">
-            <div className="p-4 border-b border-charcoal-700/50 flex items-center justify-between">
-              <Logo size="sm" />
+            <div className="p-4 border-b border-charcoal-700/50 flex justify-end">
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 text-charcoal-200 hover:text-gold-500"
                 aria-label="Close menu"
               >
-                <X size={24} />
               </button>
             </div>
             <nav className="p-4">
