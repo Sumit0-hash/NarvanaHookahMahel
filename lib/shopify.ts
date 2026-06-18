@@ -461,3 +461,69 @@ function transformCart(raw: any) {
     cost: raw.cost,
   };
 }
+
+export async function updateCartLine(
+  cartId: string,
+  lineId: string,
+  quantity: number
+) {
+  const data = await shopifyFetch<{
+    cartLinesUpdate: { cart: unknown };
+  }>(
+    `${CART_FRAGMENT}
+    mutation UpdateCartLine(
+      $cartId: ID!,
+      $lines: [CartLineUpdateInput!]!
+    ) {
+      cartLinesUpdate(
+        cartId: $cartId,
+        lines: $lines
+      ) {
+        cart {
+          ...CartFields
+        }
+      }
+    }`,
+    {
+      cartId,
+      lines: [
+        {
+          id: lineId,
+          quantity,
+        },
+      ],
+    }
+  );
+
+  return transformCart(data.cartLinesUpdate.cart);
+}
+
+export async function removeCartLine(
+  cartId: string,
+  lineId: string
+) {
+  const data = await shopifyFetch<{
+    cartLinesRemove: { cart: unknown };
+  }>(
+    `${CART_FRAGMENT}
+    mutation RemoveCartLine(
+      $cartId: ID!,
+      $lineIds: [ID!]!
+    ) {
+      cartLinesRemove(
+        cartId: $cartId,
+        lineIds: $lineIds
+      ) {
+        cart {
+          ...CartFields
+        }
+      }
+    }`,
+    {
+      cartId,
+      lineIds: [lineId],
+    }
+  );
+
+  return transformCart(data.cartLinesRemove.cart);
+}

@@ -28,6 +28,10 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
   const discount = product.compareAtPrice ? getDiscountPercentage(product.price, product.compareAtPrice) : 0;
 
   const handleAddToCart = () => {
+    if (!product.merchandiseId) {
+      console.error('Missing Shopify variant ID');
+      return;
+    }
     addItem({
       merchandiseId: product.merchandiseId || `local-${product.handle}`,
       quantity,
@@ -178,7 +182,7 @@ export function ProductDetailClient({ product, relatedProducts }: ProductDetailC
             >
               <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
             </button>
-            
+
           </div>
 
           <div className="grid grid-cols-3 gap-4 mb-8">

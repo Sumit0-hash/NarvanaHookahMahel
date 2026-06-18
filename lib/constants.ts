@@ -12,8 +12,8 @@ export const BUSINESS = {
     state: 'Punjab',
     pincode: '140603',
   },
-  phone: '+91 98765 43210',
-  whatsapp: '+91 98765 43210',
+  phone: '+91 8685845314',
+  whatsapp: '+91 8685845314',
   email: 'info@narwanahookahmahal.com',
 } as const;
 

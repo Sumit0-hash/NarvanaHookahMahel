@@ -81,9 +81,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     async function initCart() {
       try {
+        const storedId = getStoredCartId();
 
         if (storedId) {
-
           setCartId(storedId);
 
           const res = await fetch(
@@ -92,11 +92,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
           const cart = await res.json();
 
-
           setCheckoutUrl(cart.checkoutUrl);
+
+          const updatedItems = cart.lines.map((line: any) => ({
+            lineId: line.id,
+            merchandiseId: line.merchandise.id,
+            quantity: line.quantity,
+            title: line.merchandise.product.title,
+            price: line.merchandise.price.amount,
+            image: line.merchandise.product.featuredImage?.url ?? null,
+            handle: line.merchandise.product.handle,
+            variantTitle: line.merchandise.title,
+          }));
+
+          setItems(updatedItems);
+          storeItems(updatedItems);
 
           return;
         }
+
         const res = await fetch('/api/cart/create');
         const cart = await res.json();
 
@@ -105,7 +119,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
         storeCartId(cart.id);
       } catch (err) {
-        console.error("INIT CART ERROR:", err);
+        console.error('INIT CART ERROR:', err);
       }
     }
 
@@ -125,7 +139,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      await fetch('/api/cart/add', {
+      const response = await fetch('/api/cart/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,31 +150,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           quantity: newItem.quantity,
         }),
       });
+      const cart = await response.json();
+      const updatedItems = cart.lines.map((line: any) => ({
+        lineId: line.id,
+        merchandiseId: line.merchandise.id,
+        quantity: line.quantity,
+        title: line.merchandise.product.title,
+        price: line.merchandise.price.amount,
+        image: line.merchandise.product.featuredImage?.url ?? null,
+        handle: line.merchandise.product.handle,
+        variantTitle: line.merchandise.title,
+      }));
 
-      setItems((prev) => {
-        const existing = prev.find(
-          (i) => i.merchandiseId === newItem.merchandiseId
-        );
+      setItems(updatedItems);
+      storeItems(updatedItems);
 
-        if (existing) {
-          const updated = prev.map((i) =>
-            i.merchandiseId === newItem.merchandiseId
-              ? { ...i, quantity: i.quantity + newItem.quantity }
-              : i
-          );
-
-          storeItems(updated);
-          return updated;
-        }
-
-        const updated = [
-          ...prev,
-          { ...newItem, lineId: `local-${Date.now()}` },
-        ];
-
-        storeItems(updated);
-        return updated;
-      });
+      setCheckoutUrl(cart.checkoutUrl);
+      setIsOpen(true);
 
       setIsOpen(true);
     } finally {
@@ -168,25 +174,49 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [cartId]);
 
-  const updateItemQuantity = useCallback(async (merchandiseId: string, quantity: number) => {
-    setIsLoading(true);
-    try {
-      setItems((prev) => {
-        if (quantity <= 0) {
-          const updated = prev.filter((i) => i.merchandiseId !== merchandiseId);
-          storeItems(updated);
-          return updated;
-        }
-        const updated = prev.map((i) =>
-          i.merchandiseId === merchandiseId ? { ...i, quantity } : i
-        );
-        storeItems(updated);
-        return updated;
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const updateItemQuantity = useCallback(
+    async (merchandiseId: string, quantity: number) => {
+      const item = items.find(
+        (i) => i.merchandiseId === merchandiseId
+      );
+
+      if (!item?.lineId || !cartId) return;
+
+      setIsLoading(true);
+
+      try {
+        const res = await fetch('/api/cart/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cartId,
+            lineId: item.lineId,
+            quantity,
+          }),
+        });
+        const cart = await res.json();
+        const updatedItems = cart.lines.map((line: any) => ({
+          lineId: line.id,
+          merchandiseId: line.merchandise.id,
+          quantity: line.quantity,
+          title: line.merchandise.product.title,
+          price: line.merchandise.price.amount,
+          image: line.merchandise.product.featuredImage?.url ?? null,
+          handle: line.merchandise.product.handle,
+          variantTitle: line.merchandise.title,
+        }));
+
+        setItems(updatedItems);
+        storeItems(updatedItems);
+        setCheckoutUrl(cart.checkoutUrl);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [items, cartId]
+  );
 
   const removeItem = useCallback(async (merchandiseId: string) => {
     setIsLoading(true);
